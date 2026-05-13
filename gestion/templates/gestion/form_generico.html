@@ -1,0 +1,15 @@
+{% extends "gestion/base.html" %}
+
+{% block content %}
+<div class="contenedor" style="max-width: 600px; margin: 20px auto;">
+    <h2>{% if object %}Editar{% else %}Crear{% endif %} Registro</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div style="margin-top: 20px;">
+            <button type="submit" style="background-color: #8B0000; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Guardar</button>
+            <a href="{{ request.META.HTTP_REFERER }}" style="margin-left: 10px; text-decoration: none; color: #666;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

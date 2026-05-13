@@ -1,7 +1,10 @@
 {% extends 'gestion/base.html' %}
 
 {% block content %}
-<h2>Empleados</h2>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Empleados</h2>
+    <a href="{% url 'empleado_crear' %}" style="background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">Nuevo Empleado</a>
+</div>
 <table>
     <tr>
         <th>ID</th>
@@ -9,6 +12,7 @@
         <th>Cargo</th>
         <th>Teléfono</th>
         <th>Correo</th>
+        <th>Acciones</th>
     </tr>
     {% for empleado in empleados %}
     <tr>
@@ -17,6 +21,10 @@
         <td>{{ empleado.cargo }}</td>
         <td>{{ empleado.telefono }}</td>
         <td>{{ empleado.correo }}</td>
+        <td>
+            <a href="{% url 'empleado_editar' empleado.id %}" style="color: #007bff; text-decoration: none; margin-right: 10px;">Editar</a>
+            <a href="{% url 'empleado_eliminar' empleado.id %}" style="color: #dc3545; text-decoration: none;">Eliminar</a>
+        </td>
     </tr>
     {% endfor %}
 </table>
