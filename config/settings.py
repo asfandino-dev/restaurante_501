@@ -82,10 +82,14 @@ DATABASES = {
         'HOST': r'localhost\SQLEXPRESS',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server'
+            'driver': 'ODBC Driver 17 for SQL Server',
+            'extra_params' : 'TrustServerCertificate=no'
         }
     }
 }
+
+DATABASE_CONNECTION_POOLING = False
+CONN_MAX_AGE = 0
 
 
 # Password validation
