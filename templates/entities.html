@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+
+{% block title %}Administración de Sedes y Especialidades{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Sedes -->
+    <div class="bg-white p-6 rounded shadow-md">
+        <h3 class="text-xl font-bold mb-4 border-b pb-2">Gestionar Sedes</h3>
+
+        <form action="{{ url_for('add_clinic') }}" method="POST" class="mb-6 bg-gray-50 p-4 rounded border">
+            <div class="mb-3">
+                <input type="text" name="name" placeholder="Nombre de la Sede" class="w-full p-2 border rounded" required>
+            </div>
+            <div class="mb-3">
+                <input type="text" name="address" placeholder="Dirección" class="w-full p-2 border rounded" required>
+            </div>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Agregar Sede</button>
+        </form>
+
+        <table class="min-w-full">
+            <thead>
+                <tr>
+                    <th class="text-left py-2 px-2 border-b">ID</th>
+                    <th class="text-left py-2 px-2 border-b">Nombre</th>
+                    <th class="text-left py-2 px-2 border-b">Dirección</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for clinic in clinics %}
+                <tr class="hover:bg-gray-50">
+                    <td class="py-2 px-2 border-b">{{ clinic.id }}</td>
+                    <td class="py-2 px-2 border-b">
+                        <form action="{{ url_for('edit_clinic', id=clinic.id) }}" method="POST" class="flex gap-2">
+                            <input type="text" name="name" value="{{ clinic.name }}" class="border rounded px-1 w-full text-sm">
+                            <input type="text" name="address" value="{{ clinic.address }}" class="border rounded px-1 w-full text-sm">
+                            <button type="submit" class="text-blue-600 hover:text-blue-800 text-xs font-bold">Editar</button>
+                        </form>
+                    </td>
+                    <td class="py-2 px-2 border-b text-right">
+                        <a href="{{ url_for('delete_clinic', id=clinic.id) }}" class="text-red-600 hover:text-red-800 text-xs font-bold" onclick="return confirm('¿Eliminar sede?')">X</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Especialidades -->
+    <div class="bg-white p-6 rounded shadow-md">
+        <h3 class="text-xl font-bold mb-4 border-b pb-2">Gestionar Especialidades</h3>
+
+        <form action="{{ url_for('add_specialty') }}" method="POST" class="mb-6 bg-gray-50 p-4 rounded border">
+            <div class="mb-3">
+                <input type="text" name="name" placeholder="Nombre de la Especialidad (ej. Cardiología)" class="w-full p-2 border rounded" required>
+            </div>
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 w-full">Agregar Especialidad</button>
+        </form>
+
+        <table class="min-w-full">
+            <thead>
+                <tr>
+                    <th class="text-left py-2 px-2 border-b">ID</th>
+                    <th class="text-left py-2 px-2 border-b">Especialidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for specialty in specialties %}
+                <tr class="hover:bg-gray-50">
+                    <td class="py-2 px-2 border-b">{{ specialty.id }}</td>
+                    <td class="py-2 px-2 border-b">
+                        <form action="{{ url_for('edit_specialty', id=specialty.id) }}" method="POST" class="flex gap-2">
+                            <input type="text" name="name" value="{{ specialty.name }}" class="border rounded px-1 w-full text-sm">
+                            <button type="submit" class="text-blue-600 hover:text-blue-800 text-xs font-bold">Editar</button>
+                        </form>
+                    </td>
+                    <td class="py-2 px-2 border-b text-right">
+                        <a href="{{ url_for('delete_specialty', id=specialty.id) }}" class="text-red-600 hover:text-red-800 text-xs font-bold" onclick="return confirm('¿Eliminar especialidad?')">X</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

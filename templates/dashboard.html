@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - {{ current_user.role }}{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap">
+    {% if current_user.role == 'Administrador' %}
+    <div class="w-full md:w-1/2 xl:w-1/3 p-6">
+        <div class="bg-gradient-to-b from-green-200 to-green-100 border-b-4 border-green-600 rounded-lg shadow-xl p-5">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded-full p-5 bg-green-600"><i class="fa fa-users fa-2x fa-inverse"></i></div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-600">Ocupación (30d)</h5>
+                    <h3 class="font-bold text-3xl">{{ "%.1f"|format(occupancy) }}%</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="w-full md:w-1/2 xl:w-1/3 p-6">
+        <div class="bg-gradient-to-b from-red-200 to-red-100 border-b-4 border-red-500 rounded-lg shadow-xl p-5">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded-full p-5 bg-red-600"><i class="fas fa-user-times fa-2x fa-inverse"></i></div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-600">Ausentismo (30d)</h5>
+                    <h3 class="font-bold text-3xl">{{ "%.1f"|format(absenteeism) }}%</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="w-full mt-12">
+    <p class="text-xl pb-3 flex items-center">
+        <i class="fas fa-list mr-3"></i>
+        {% if current_user.role == 'Medico' %} Mi Agenda de Hoy {% elif current_user.role == 'Paciente' %} Mis Próximas Citas {% else %} Citas del Día {% endif %}
+    </p>
+    <div class="bg-white overflow-auto">
+        <table class="min-w-full bg-white">
+            <thead class="bg-gray-800 text-white">
+                <tr>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Fecha</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Hora</th>
+                    {% if current_user.role != 'Paciente' %}
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Paciente</th>
+                    {% endif %}
+                    {% if current_user.role != 'Medico' %}
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Médico</th>
+                    {% endif %}
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Sede</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Estado</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-700">
+                {% for app in appointments %}
+                <tr>
+                    <td class="text-left py-3 px-4">{{ app.date }}</td>
+                    <td class="text-left py-3 px-4">{{ app.time.strftime('%H:%M') }}</td>
+                    {% if current_user.role != 'Paciente' %}
+                    <td class="text-left py-3 px-4">{{ app.patient.full_name }}</td>
+                    {% endif %}
+                    {% if current_user.role != 'Medico' %}
+                    <td class="text-left py-3 px-4">{{ app.doctor.user.full_name }}</td>
+                    {% endif %}
+                    <td class="text-left py-3 px-4">{{ app.clinic.name }}</td>
+                    <td class="text-left py-3 px-4">
+                        <span class="px-2 py-1 rounded-full text-xs
+                            {% if app.status == 'Agendada' %} bg-blue-100 text-blue-800
+                            {% elif app.status == 'Atendida' %} bg-green-100 text-green-800
+                            {% elif app.status == 'Cancelada' %} bg-gray-100 text-gray-800
+                            {% else %} bg-red-100 text-red-800 {% endif %}">
+                            {{ app.status }}
+                        </span>
+                    </td>
+                    <td class="text-left py-3 px-4">
+                        {% if app.status == 'Agendada' %}
+                            {% if current_user.role == 'Paciente' %}
+                            <a href="{{ url_for('cancel_appointment', id=app.id) }}" class="text-red-600 hover:text-red-900" onclick="return confirm('¿Está seguro de cancelar?')">Cancelar</a>
+                            {% elif current_user.role in ['Medico', 'Recepcionista'] %}
+                            <a href="{{ url_for('update_appointment_status', id=app.id, status='Atendida') }}" class="text-green-600 hover:text-green-900 mr-2">Atendida</a>
+                            <a href="{{ url_for('update_appointment_status', id=app.id, status='Ausente') }}" class="text-orange-600 hover:text-orange-900 mr-2">Ausente</a>
+                            <a href="{{ url_for('cancel_appointment', id=app.id) }}" class="text-red-600 hover:text-red-900">Cancelar</a>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center py-4">No hay citas registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
