@@ -1,15 +1,145 @@
 {% extends "gestion/base.html" %}
 
 {% block content %}
-<div class="contenedor" style="max-width: 400px; margin: 50px auto;">
-    <h2 style="text-align: center;">Iniciar Sesión</h2>
-    <form method="post">
+<style>
+    /* Contenedor principal de autenticación */
+    .auth-box {
+        max-width: 380px;
+        margin: 60px auto;
+        background-color: var(--bg-panel, #1a1a1a);
+        padding: 40px 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        border: 1px solid var(--border-color, #333);
+    }
+
+    /* Estructura de la cabecera (Logo, Título y Enlace) */
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-logo {
+        width: 48px;
+        height: 48px;
+        background-color: var(--bg-base, #121212);
+        border: 1px solid var(--border-color, #333);
+        border-radius: 12px;
+        margin: 0 auto 15px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-logo::before {
+        content: "()";
+        color: #007bff;
+        font-weight: 600;
+        font-size: 1.2rem;
+        letter-spacing: -1px;
+    }
+
+    .auth-header h2 {
+        margin: 0 0 8px 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--text-main, #eaeaea);
+    }
+
+    .auth-header p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-muted, #888888);
+    }
+
+    .auth-header a {
+        color: var(--text-main, #eaeaea);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .auth-header a:hover {
+        color: #007bff;
+    }
+
+    /* Estilización forzada a los campos generados por Django (form.as_p) */
+    .auth-form p {
+        margin-bottom: 18px;
+        text-align: left;
+    }
+
+    .auth-form label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-muted, #888888);
+        margin-bottom: 6px;
+    }
+
+    .auth-form input {
+        width: 100%;
+        padding: 12px 15px;
+        background-color: var(--bg-base, #121212);
+        border: 1px solid var(--border-color, #333);
+        border-radius: 8px;
+        color: var(--text-main, #eaeaea);
+        box-sizing: border-box;
+        font-size: 0.95rem;
+        transition: border-color 0.2s ease, outline 0.2s ease;
+    }
+
+    .auth-form input:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+
+    /* Manejo visual de errores y textos de ayuda de Django */
+    .auth-form ul.errorlist {
+        color: #ff4c4c;
+        list-style-type: none;
+        padding: 0;
+        font-size: 0.8rem;
+        margin: -10px 0 10px 0;
+    }
+
+    .auth-form .helptext {
+        display: block;
+        font-size: 0.75rem;
+        color: #666;
+        margin-top: 4px;
+    }
+
+    /* Botón principal */
+    .auth-btn {
+        width: 100%;
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.2s ease;
+    }
+
+    .auth-btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="auth-box">
+    <div class="auth-header">
+        <div class="auth-logo"></div>
+        <h2>Bienvenido de nuevo</h2>
+        <p>¿No tienes una cuenta aún? <a href="{% url 'register' %}">Regístrate</a></p>
+    </div>
+    
+    <form method="post" class="auth-form">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" style="background-color: #8B0000; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%;">Ingresar</button>
+        <button type="submit" class="auth-btn">Iniciar Sesión</button>
     </form>
-    <p style="text-align: center; margin-top: 15px;">
-        ¿No tienes una cuenta? <a href="{% url 'register' %}" style="color: #8B0000;">Regístrate aquí</a>
-    </p>
 </div>
 {% endblock %}
