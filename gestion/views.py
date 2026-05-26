@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
-from .models import Cliente, Empleado, Mesa, Plato, Orden, Factura
+from .models import Cliente, Empleado, Mesa, Plato, Orden, Factura, Rol, Permiso
 from .forms import ClienteForm, EmpleadoForm, MesaForm, PlatoForm, OrdenForm, FacturaForm
 from .utils import role_required, RoleRequiredMixin
 
@@ -194,3 +194,68 @@ class FacturaDeleteView(RoleRequiredMixin, DeleteView):
     model = Factura
     template_name = 'gestion/confirmar_eliminar.html'
     success_url = reverse_lazy('lista_facturas')
+
+
+# --- REPORTE GENERAL ---
+@login_required
+@role_required(['Administrador'])
+def reporte_general(request):
+    context = {
+        'total_ordenes': Orden.objects.count(),
+        'total_facturas': Factura.objects.count(),
+    }
+    return render(request, 'gestion/reporte_general.html', context)
+
+# --- ROLES CRUD ---
+@login_required
+@role_required(['Administrador'])
+def lista_roles(request):
+    roles = Rol.objects.all()
+    return render(request, 'gestion/roles.html', {'roles': roles})
+
+class RolCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['Administrador']
+    model = Rol
+    fields = ['nombre', 'descripcion', 'permisos']
+    template_name = 'gestion/form_generico.html'
+    success_url = reverse_lazy('lista_roles')
+
+class RolUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['Administrador']
+    model = Rol
+    fields = ['nombre', 'descripcion', 'permisos']
+    template_name = 'gestion/form_generico.html'
+    success_url = reverse_lazy('lista_roles')
+
+class RolDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['Administrador']
+    model = Rol
+    template_name = 'gestion/confirmar_eliminar.html'
+    success_url = reverse_lazy('lista_roles')
+
+# --- PERMISOS CRUD ---
+@login_required
+@role_required(['Administrador'])
+def lista_permisos(request):
+    permisos = Permiso.objects.all()
+    return render(request, 'gestion/permisos.html', {'permisos': permisos})
+
+class PermisoCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['Administrador']
+    model = Permiso
+    fields = ['nombre', 'descripcion']
+    template_name = 'gestion/form_generico.html'
+    success_url = reverse_lazy('lista_permisos')
+
+class PermisoUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['Administrador']
+    model = Permiso
+    fields = ['nombre', 'descripcion']
+    template_name = 'gestion/form_generico.html'
+    success_url = reverse_lazy('lista_permisos')
+
+class PermisoDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['Administrador']
+    model = Permiso
+    template_name = 'gestion/confirmar_eliminar.html'
+    success_url = reverse_lazy('lista_permisos')

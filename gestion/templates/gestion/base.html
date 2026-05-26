@@ -65,11 +65,20 @@
             padding: 10px 15px;
             border-radius: 8px;
             transition: background 0.2s ease, color 0.2s ease;
+            border-left: 4px solid transparent; /* Espacio reservado para el borde */
         }
 
         nav a.nav-link:hover {
             background-color: var(--bg-hover);
             color: var(--text-main);
+        }
+
+        /* Nueva clase para el estado activo */
+        nav a.nav-link.active {
+            border-left: 4px solid var(--accent-purple); /* Borde color #6a50e5 */
+            background-color: rgba(123, 97, 255, 0.1); /* Fondo sutil acorde al tema */
+            color: var(--text-main);
+            font-weight: bold;
         }
 
         /* Contenedor para separar la zona de autenticación */
@@ -235,21 +244,27 @@
     </header>
 
     <nav>
-        <a href="/" class="nav-link">Inicio</a>
+        <a href="{% url 'inicio' %}" class="nav-link {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}">Inicio</a>
+        
         {% if user.is_authenticated %}
-            {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Mesero' or user.is_superuser %}
-                <a href="/clientes/" class="nav-link">Clientes</a>
+            {% if user.empleado.rol.nombre == 'Administrador' or user.empleado.rol.nombre == 'Mesero' or user.is_superuser %}
+                <a href="{% url 'lista_clientes' %}" class="nav-link {% if 'cliente' in request.resolver_match.url_name %}active{% endif %}">Clientes</a>
             {% endif %}
-            {% if user.empleado.cargo == 'Administrador' or user.is_superuser %}
-                <a href="/empleados/" class="nav-link">Empleados</a>
+            
+            {% if user.empleado.rol.nombre == 'Administrador' or user.is_superuser %}
+                <a href="{% url 'lista_empleados' %}" class="nav-link {% if 'empleado' in request.resolver_match.url_name %}active{% endif %}">Empleados</a>
+                <a href="{% url 'lista_roles' %}" class="nav-link {% if 'rol' in request.resolver_match.url_name %}active{% endif %}">Roles</a>
             {% endif %}
-            {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Mesero' or user.is_superuser %}
-                <a href="/mesas/" class="nav-link">Mesas</a>
-                <a href="/platos/" class="nav-link">Platos</a>
+            
+            {% if user.empleado.rol.nombre == 'Administrador' or user.empleado.rol.nombre == 'Mesero' or user.is_superuser %}
+                <a href="{% url 'lista_mesas' %}" class="nav-link {% if 'mesa' in request.resolver_match.url_name %}active{% endif %}">Mesas</a>
+                <a href="{% url 'lista_platos' %}" class="nav-link {% if 'plato' in request.resolver_match.url_name %}active{% endif %}">Platos</a>
             {% endif %}
-            <a href="/ordenes/" class="nav-link">Órdenes</a>
-            {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Cajero' or user.is_superuser %}
-                <a href="/facturas/" class="nav-link">Facturas</a>
+            
+            <a href="{% url 'lista_ordenes' %}" class="nav-link {% if 'orden' in request.resolver_match.url_name %}active{% endif %}">Órdenes</a>
+            
+            {% if user.empleado.rol.nombre == 'Administrador' or user.empleado.rol.nombre == 'Cajero' or user.is_superuser %}
+                <a href="{% url 'lista_facturas' %}" class="nav-link {% if 'factura' in request.resolver_match.url_name %}active{% endif %}">Facturas</a>
             {% endif %}
         {% endif %}
         
@@ -268,7 +283,7 @@
             </div>
         {% endif %}
         
-        <a href="/admin/" class="nav-link" style="margin-top: 15px;">Admin</a>
+        <a href="/admin/" class="nav-link">Admin</a>
     </nav>
 
     <div class="contenedor">

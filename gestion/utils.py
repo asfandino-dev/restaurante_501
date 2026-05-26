@@ -13,12 +13,17 @@ def role_required(allowed_roles):
             if not request.user.is_authenticated:
                 return redirect_to_login(request.get_full_path())
 
-            if not hasattr(request.user, 'empleado') or request.user.empleado.cargo not in allowed_roles:
-                if request.user.is_superuser and 'Administrador' in allowed_roles:
-                     return view_func(request, *args, **kwargs)
-                raise PermissionDenied
+            # Bypass de seguridad: El superusuario tiene acceso a todo.
+            if request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
 
-            return view_func(request, *args, **kwargs)
+            # Validar el rol a través de la relación empleado -> rol -> nombre
+            if hasattr(request.user, 'empleado') and request.user.empleado.rol:
+                if request.user.empleado.rol.nombre in allowed_roles:
+                    return view_func(request, *args, **kwargs)
+
+            raise PermissionDenied
+
         return _wrapped_view
     return decorator
 
@@ -32,11 +37,12 @@ class RoleRequiredMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
 
-        user_role = getattr(request.user.empleado, 'cargo', None) if hasattr(request.user, 'empleado') else None
-
-        # Superuser bypass for Administrador role
-        if request.user.is_superuser and 'Administrador' in self.allowed_roles:
+        # Bypass de seguridad: El superusuario tiene acceso a todo.
+        if request.user.is_superuser:
             return super().dispatch(request, *args, **kwargs)
+
+        # Extracción segura del nombre del rol
+        user_role = request.user.empleado.rol.nombre if hasattr(request.user, 'empleado') and request.user.empleado.rol else None
 
         if user_role not in self.allowed_roles:
             raise PermissionDenied
