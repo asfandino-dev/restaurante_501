@@ -9,7 +9,7 @@ class Cliente(models.Model):
     class Meta:
         db_table = 'Cliente'
 
-    def _str_(self):
+    def __str__(self):
         return self.nombre
 
 class Empleado(models.Model):
@@ -29,7 +29,7 @@ class Empleado(models.Model):
     class Meta:
         db_table = 'Empleado'
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.nombre} - {self.cargo}"
 
 class Mesa(models.Model):
@@ -46,7 +46,7 @@ class Mesa(models.Model):
     class Meta:
         db_table = 'Mesa'
 
-    def _str_(self):
+    def __str__(self):
         return f"Mesa {self.numero_mesa}"
 
 class Plato(models.Model):
@@ -59,7 +59,7 @@ class Plato(models.Model):
     class Meta:
         db_table = 'Plato'
 
-    def _str_(self):
+    def __str__(self):
         return self.nombre_plato
 
 class Orden(models.Model):
@@ -81,7 +81,7 @@ class Orden(models.Model):
     class Meta:
         db_table = 'OrdenRestaurante'
 
-    def _str_(self):
+    def __str__(self):
         return f"Orden {self.id} - {self.cliente.nombre}"
 
     def update_total(self):
@@ -105,7 +105,7 @@ class DetalleOrden(models.Model):
         # Update order total after save
         self.orden.update_total()
 
-    def _str_(self):
+    def __str__(self):
         return f"Detalle {self.id} - Orden {self.orden.id}"
 
 class Factura(models.Model):
@@ -127,5 +127,5 @@ class Factura(models.Model):
     class Meta:
         db_table = 'Factura'
 
-    def _str_(self):
+    def __str__(self):
         return f"Factura {self.id} - Orden {self.orden.id}"
