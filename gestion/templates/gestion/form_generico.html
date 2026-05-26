@@ -55,7 +55,7 @@
     }
 
     .generic-form textarea {
-        resize: vertical; /* Permite cambiar el tamaño solo hacia abajo */
+        resize: vertical;
         min-height: 100px;
     }
 
@@ -66,7 +66,7 @@
         border-color: var(--accent-purple, #7b61ff);
     }
 
-    /* Corrección específica para los checkboxes (ej. campo "Disponible") */
+    /* Corrección específica para los checkboxes */
     .generic-form input[type="checkbox"] {
         width: 18px;
         height: 18px;
@@ -81,13 +81,29 @@
         gap: 10px;
     }
 
-    /* Manejo de errores de validación */
+    /* Manejo de errores de validación estructurados */
     .generic-form ul.errorlist {
         color: #ff4c4c;
         list-style-type: none;
         padding: 0;
-        font-size: 0.8rem;
-        margin: -10px 0 10px 0;
+        margin: 5px 0 0 0; /* Ajustado para estar pegado al input */
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .generic-form ul.errorlist li {
+        background-color: rgba(255, 76, 76, 0.1);
+        border-left: 4px solid #ff4c4c;
+        padding: 8px 12px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 5px;
+    }
+
+    .generic-form ul.errorlist li::before {
+        content: "⚠️";
     }
 
     .generic-form .helptext {
@@ -138,9 +154,31 @@
 
 <div class="form-box">
     <h2>{% if object %}Editar{% else %}Crear{% endif %} Registro</h2>
-    <form method="post" class="generic-form">
+    
+    <form method="post" class="generic-form" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
+        
+        {% if form.non_field_errors %}
+            <div class="errores-generales">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <p>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                
+                {% if field.help_text %}
+                    <span class="helptext">{{ field.help_text|safe }}</span>
+                {% endif %}
+            </p>
+        {% endfor %}
+
         <div class="form-actions">
             <button type="submit" class="btn-submit">Guardar</button>
             <a href="{{ request.META.HTTP_REFERER }}" class="btn-cancel">Cancelar</a>

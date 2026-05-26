@@ -114,11 +114,18 @@ class DetalleOrden(models.Model):
         db_table = 'Detalle_Orden'
 
     def save(self, *args, **kwargs):
-        self.precio_unitario = self.plato.precio
-        self.subtotal = Decimal(self.cantidad) * self.precio_unitario
+        # 1. Asegurar precios unitarios y subtotales
+        if not self.precio_unitario:
+            self.precio_unitario = self.plato.precio
+        
+        if not self.subtotal:
+            self.subtotal = Decimal(self.cantidad) * self.precio_unitario
+        
         super().save(*args, **kwargs)
-        # Update order total after save
-        self.orden.update_total()
+        
+        # 2. Actualizar el total de la orden
+        if self.orden:
+            self.orden.update_total()
 
     def __str__(self):
         return f"Detalle {self.id} - Orden {self.orden.id}"

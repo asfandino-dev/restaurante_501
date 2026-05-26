@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
-from .models import Cliente, Empleado, Mesa, Plato, Orden, Factura, Rol, Permiso
-from .forms import ClienteForm, EmpleadoForm, MesaForm, PlatoForm, OrdenForm, FacturaForm
+from .models import Cliente, Empleado, Mesa, Plato, Orden, Factura, Rol, Permiso, DetalleOrden
+from .forms import ClienteForm, EmpleadoForm, MesaForm, PlatoForm, OrdenForm, FacturaForm, DetalleOrdenForm
 from .utils import role_required, RoleRequiredMixin
 
 @login_required
@@ -69,23 +69,24 @@ def lista_ordenes(request):
 def lista_facturas(request):
     facturas = Factura.objects.all()
     return render(request, 'gestion/facturas.html', {'facturas': facturas})
+
 # --- CLIENTE CRUD ---
 class ClienteCreateView(RoleRequiredMixin, CreateView):
-    allowed_roles = ['Administrador']
+    allowed_roles = ['Administrador', 'Mesero'] # Rol añadido
     model = Cliente
     form_class = ClienteForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_clientes')
 
 class ClienteUpdateView(RoleRequiredMixin, UpdateView):
-    allowed_roles = ['Administrador']
+    allowed_roles = ['Administrador', 'Mesero'] # Rol añadido para corregir errores de tipeo
     model = Cliente
     form_class = ClienteForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_clientes')
 
 class ClienteDeleteView(RoleRequiredMixin, DeleteView):
-    allowed_roles = ['Administrador']
+    allowed_roles = ['Administrador'] # Se mantiene exclusivo del admin
     model = Cliente
     template_name = 'gestion/confirmar_eliminar.html'
     success_url = reverse_lazy('lista_clientes')
@@ -159,7 +160,9 @@ class OrdenCreateView(RoleRequiredMixin, CreateView):
     model = Orden
     form_class = OrdenForm
     template_name = 'gestion/form_generico.html'
-    success_url = reverse_lazy('lista_ordenes')
+
+    def get_success_url(self):
+        return reverse_lazy('agregar_detalle', kwargs={'pk': self.object.pk})
 
 class OrdenUpdateView(RoleRequiredMixin, UpdateView):
     allowed_roles = ['Administrador', 'Mesero']
@@ -259,3 +262,89 @@ class PermisoDeleteView(RoleRequiredMixin, DeleteView):
     model = Permiso
     template_name = 'gestion/confirmar_eliminar.html'
     success_url = reverse_lazy('lista_permisos')
+
+
+@login_required
+@role_required(['Administrador', 'Mesero'])
+def agregar_detalle(request, pk):
+    orden = get_object_or_404(Orden, pk=pk)
+    
+    if request.method == 'POST':
+        form = DetalleOrdenForm(request.POST)
+        if form.is_valid():
+            # Creamos la instancia, asignamos la orden y guardamos.
+            # El modelo se encargará de calcular precios y subtotales en su propio método save()
+            detalle = form.save(commit=False)
+            detalle.orden = orden
+            detalle.save() 
+            
+            # Actualizamos el total de la orden (método en el modelo Orden)
+            orden.update_total() 
+            
+            return redirect('agregar_detalle', pk=pk)
+    else:
+        form = DetalleOrdenForm()
+        
+    detalles = DetalleOrden.objects.filter(orden=orden)
+    return render(request, 'gestion/agregar_detalle.html', {
+        'orden': orden,
+        'detalles': detalles,
+        'form': form
+    })
+
+@login_required
+@role_required(['Administrador', 'Mesero'])
+def finalizar_orden(request, pk):
+    from decimal import Decimal
+    from django.contrib import messages
+    from .models import DetalleOrden, Factura
+
+    orden = get_object_or_404(Orden, pk=pk)
+
+    # BLOQUEO: si ya fue facturada no permitir repetir
+    if orden.estado_orden == 'Facturada':
+        messages.error(request, 'Esta orden ya fue facturada.')
+        return redirect('lista_ordenes')
+
+    # Validar detalles
+    detalles = DetalleOrden.objects.filter(orden=orden)
+
+    if not detalles.exists():
+        messages.error(request, 'La orden no tiene platos agregados.')
+        return redirect('agregar_detalle', pk=pk)
+
+    subtotal = sum(
+        (d.subtotal for d in detalles if d.subtotal is not None),
+        Decimal('0.00')
+    )
+
+    impuesto = (
+        subtotal * Decimal('0.19')
+    ).quantize(Decimal('0.01'))
+
+    total = (
+        subtotal + impuesto
+    ).quantize(Decimal('0.01'))
+
+    factura = Factura.objects.create(
+        orden=orden,
+        subtotal=subtotal,
+        impuesto=impuesto,
+        total_factura=total,
+        metodo_pago='Efectivo'
+    )
+
+    # Cambiar estado
+    orden.estado_orden = 'Facturada'
+    orden.save()
+
+    messages.success(request, 'Factura generada correctamente.')
+
+    return redirect('lista_facturas')
+
+# --- MANEJADORES DE ERRORES ---
+def error_403(request, exception=None):
+    """
+    Captura las excepciones PermissionDenied y renderiza la plantilla 403 personalizada.
+    """
+    return render(request, 'gestion/403.html', status=403)

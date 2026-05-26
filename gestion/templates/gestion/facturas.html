@@ -3,7 +3,7 @@
 {% block content %}
 <div style="display: flex; justify-content: space-between; align-items: center;">
     <h2>Facturas</h2>
-    {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Cajero' or user.is_superuser %}
+    {% if user.empleado.rol.nombre == 'Administrador' or user.empleado.rol.nombre == 'Cajero' or user.is_superuser %}
     <a href="{% url 'factura_crear' %}" style="background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">Nueva Factura</a>
     {% endif %}
 </div>
@@ -24,10 +24,10 @@
         <td>{{ factura.total_factura }}</td>
         <td>{{ factura.metodo_pago }}</td>
         <td>
-            {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Cajero' or user.is_superuser %}
-            <a href="{% url 'factura_editar' factura.id %}" style="color: #007bff; text-decoration: none; margin-right: 10px;">Editar</a>
+            {% if user.empleado.rol.nombre == 'Administrador' or user.empleado.rol.nombre == 'Cajero' or user.is_superuser %}
+            <a href="{% url 'factura_editar' factura.id %}" class="btn-primary" style="background-color: #007bff; color: white; padding: 5px 10px; font-size: 0.8rem; text-decoration: none; border-radius: 4px; margin-right: 10px;">Gestionar Pago</a>
             {% endif %}
-            {% if user.empleado.cargo == 'Administrador' or user.is_superuser %}
+            {% if user.empleado.rol.nombre == 'Administrador' or user.is_superuser %}
             <a href="{% url 'factura_eliminar' factura.id %}" style="color: #dc3545; text-decoration: none;">Eliminar</a>
             {% endif %}
         </td>

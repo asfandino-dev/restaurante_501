@@ -1,0 +1,76 @@
+{% extends "gestion/base.html" %}
+
+{% block content %}
+<style>
+    .error-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%; /* Ocupa el alto del contenedor principal */
+    }
+
+    .error-box {
+        background-color: var(--bg-panel, #1a1a1a);
+        padding: 50px 60px;
+        border-radius: 16px;
+        border: 1px solid var(--border-color, #333333);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        max-width: 450px;
+        text-align: center;
+    }
+
+    .error-icon {
+        font-size: 5rem;
+        color: #ff4c4c; /* Rojo para alertas de seguridad */
+        margin-bottom: 15px;
+    }
+
+    .error-box h1 {
+        font-size: 3rem;
+        color: var(--text-main, #eaeaea);
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .error-box h2 {
+        font-size: 1.5rem;
+        color: var(--text-main, #eaeaea);
+        margin: 10px 0 20px 0;
+        font-weight: 500;
+    }
+
+    .error-box p {
+        color: var(--text-muted, #888888);
+        font-size: 1rem;
+        margin-bottom: 35px;
+        line-height: 1.6;
+    }
+
+    .btn-home {
+        background-color: var(--accent-purple, #7b61ff);
+        color: #ffffff;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+        display: inline-block;
+    }
+
+    .btn-home:hover {
+        background-color: #6a50e5;
+    }
+</style>
+
+<div class="error-container">
+    <div class="error-box">
+        <i class='bx bx-lock-alt error-icon'></i>
+        <h1>403</h1>
+        <h2>Acceso Denegado</h2>
+        <p>Tu rol actual no tiene los permisos necesarios para ver o modificar esta sección del sistema.</p>
+        <a href="{% url 'inicio' %}" class="btn-home">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

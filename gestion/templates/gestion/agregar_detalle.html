@@ -1,0 +1,56 @@
+{% extends "gestion/base.html" %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+    
+    <div class="card" style="width: 100%; box-sizing: border-box;">
+        <h3 style="margin-top: 0; color: var(--accent-purple);">Añadir Plato a la Orden #{{ orden.id }}</h3>
+        <form method="post" class="generic-form" novalidate style="display: flex; flex-direction: column; gap: 15px;">
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-primary" style="margin-top: 10px; width: auto; align-self: flex-start;">Agregar Ítems</button>
+        </form>
+    </div>
+
+    <div class="card" style="width: 100%; box-sizing: border-box;">
+        <h3 style="margin-top: 0;">Resumen del Pedido</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Plato</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detalle in detalles %}
+                <tr>
+                    <td>{{ detalle.plato.nombre_plato }}</td>
+                    <td>{{ detalle.cantidad }}</td>
+                    <td>${{ detalle.precio_unitario }}</td>
+                    <td>${{ detalle.subtotal }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: var(--text-muted);">No hay platos registrados en esta orden.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">Total acumulado:</span>
+                <strong style="font-size: 1.3rem; color: var(--accent-green); display: block;">${{ orden.total }}</strong>
+            </div>
+            <a href="{% url 'finalizar_orden' orden.pk %}" class="btn-primary" style="background-color: var(--accent-green); padding: 12px 25px;">Finalizar y Enviar a Caja</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

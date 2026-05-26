@@ -28,6 +28,8 @@ urlpatterns = [
 
     path('ordenes/', views.lista_ordenes, name='lista_ordenes'),
     path('ordenes/crear/', views.OrdenCreateView.as_view(), name='orden_crear'),
+    path('ordenes/<int:pk>/agregar-detalle/', views.agregar_detalle, name='agregar_detalle'),
+    path('ordenes/<int:pk>/finalizar/', views.finalizar_orden, name='finalizar_orden'),
     path('ordenes/editar/<int:pk>/', views.OrdenUpdateView.as_view(), name='orden_editar'),
     path('ordenes/eliminar/<int:pk>/', views.OrdenDeleteView.as_view(), name='orden_eliminar'),
 

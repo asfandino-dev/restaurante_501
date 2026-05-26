@@ -17,7 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from gestion.views import error_403
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('gestion.urls')),
 ]
+
+
+handler403 = 'gestion.views.error_403'
