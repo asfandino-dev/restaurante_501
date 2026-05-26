@@ -3,33 +3,43 @@
 {% block content %}
 <h2>Panel principal</h2>
 
+{% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Mesero' or user.is_superuser %}
 <div class="card">
     <h3>Clientes</h3>
     <p>{{ total_clientes }}</p>
 </div>
+{% endif %}
 
+{% if user.empleado.cargo == 'Administrador' or user.is_superuser %}
 <div class="card">
     <h3>Empleados</h3>
     <p>{{ total_empleados }}</p>
 </div>
+{% endif %}
 
+{% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Mesero' or user.is_superuser %}
 <div class="card">
     <h3>Mesas</h3>
     <p>{{ total_mesas }}</p>
 </div>
+{% endif %}
 
+{% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Mesero' or user.is_superuser %}
 <div class="card">
     <h3>Platos</h3>
     <p>{{ total_platos }}</p>
 </div>
+{% endif %}
 
 <div class="card">
     <h3>Órdenes</h3>
     <p>{{ total_ordenes }}</p>
 </div>
 
+{% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Cajero' or user.is_superuser %}
 <div class="card">
     <h3>Facturas</h3>
     <p>{{ total_facturas }}</p>
 </div>
+{% endif %}
 {% endblock %}

@@ -236,12 +236,22 @@
 
     <nav>
         <a href="/" class="nav-link">Inicio</a>
-        <a href="/clientes/" class="nav-link">Clientes</a>
-        <a href="/empleados/" class="nav-link">Empleados</a>
-        <a href="/mesas/" class="nav-link">Mesas</a>
-        <a href="/platos/" class="nav-link">Platos</a>
-        <a href="/ordenes/" class="nav-link">Órdenes</a>
-        <a href="/facturas/" class="nav-link">Facturas</a>
+        {% if user.is_authenticated %}
+            {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Mesero' or user.is_superuser %}
+                <a href="/clientes/" class="nav-link">Clientes</a>
+            {% endif %}
+            {% if user.empleado.cargo == 'Administrador' or user.is_superuser %}
+                <a href="/empleados/" class="nav-link">Empleados</a>
+            {% endif %}
+            {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Mesero' or user.is_superuser %}
+                <a href="/mesas/" class="nav-link">Mesas</a>
+                <a href="/platos/" class="nav-link">Platos</a>
+            {% endif %}
+            <a href="/ordenes/" class="nav-link">Órdenes</a>
+            {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Cajero' or user.is_superuser %}
+                <a href="/facturas/" class="nav-link">Facturas</a>
+            {% endif %}
+        {% endif %}
         
         {% if user.is_authenticated %}
             <div class="auth-container">

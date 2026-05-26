@@ -1,0 +1,38 @@
+{% extends 'gestion/base.html' %}
+
+{% block content %}
+<h2>Reporte General</h2>
+
+<div class="card">
+    <h3>Total Ventas</h3>
+    <p>${{ total_ventas }}</p>
+</div>
+
+<h3>Órdenes por Estado</h3>
+<table>
+    <tr>
+        <th>Estado</th>
+        <th>Cantidad</th>
+    </tr>
+    {% for item in ordenes_por_estado %}
+    <tr>
+        <td>{{ item.estado_orden }}</td>
+        <td>{{ item.count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Platos Más Vendidos</h3>
+<table>
+    <tr>
+        <th>Plato</th>
+        <th>Total Pedidos</th>
+    </tr>
+    {% for plato in platos_mas_vendidos %}
+    <tr>
+        <td>{{ plato.nombre_plato }}</td>
+        <td>{{ plato.total_pedidos }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

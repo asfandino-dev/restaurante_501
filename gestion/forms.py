@@ -9,7 +9,7 @@ class ClienteForm(forms.ModelForm):
 class EmpleadoForm(forms.ModelForm):
     class Meta:
         model = Empleado
-        fields = ['nombre', 'cargo', 'telefono', 'correo']
+        fields = ['user', 'nombre', 'rol', 'telefono', 'correo']
 
 class MesaForm(forms.ModelForm):
     class Meta:

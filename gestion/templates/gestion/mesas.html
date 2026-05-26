@@ -3,7 +3,9 @@
 {% block content %}
 <div style="display: flex; justify-content: space-between; align-items: center;">
     <h2>Mesas</h2>
+    {% if user.empleado.cargo == 'Administrador' or user.is_superuser %}
     <a href="{% url 'mesa_crear' %}" style="background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">Nueva Mesa</a>
+    {% endif %}
 </div>
 <table>
     <tr>
@@ -20,8 +22,12 @@
         <td>{{ mesa.capacidad }}</td>
         <td>{{ mesa.estado_mesa }}</td>
         <td>
+            {% if user.empleado.cargo == 'Administrador' or user.is_superuser %}
             <a href="{% url 'mesa_editar' mesa.id %}" style="color: #007bff; text-decoration: none; margin-right: 10px;">Editar</a>
             <a href="{% url 'mesa_eliminar' mesa.id %}" style="color: #dc3545; text-decoration: none;">Eliminar</a>
+            {% else %}
+            <span style="color: #888;">Lectura</span>
+            {% endif %}
         </td>
     </tr>
     {% endfor %}
