@@ -1,0 +1,33 @@
+{% extends 'gestion/base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Roles</h2>
+    <a href="{% url 'rol_crear' %}" style="background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">Nuevo Rol</a>
+</div>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Permisos</th>
+        <th>Acciones</th>
+    </tr>
+    {% for rol in roles %}
+    <tr>
+        <td>{{ rol.id }}</td>
+        <td>{{ rol.nombre }}</td>
+        <td>{{ rol.descripcion }}</td>
+        <td>
+            {% for permiso in rol.permisos.all %}
+                {{ permiso.nombre }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </td>
+        <td>
+            <a href="{% url 'rol_editar' rol.id %}" style="color: #007bff; text-decoration: none; margin-right: 10px;">Editar</a>
+            <a href="{% url 'rol_eliminar' rol.id %}" style="color: #dc3545; text-decoration: none;">Eliminar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

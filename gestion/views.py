@@ -7,7 +7,10 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
 from .models import Cliente, Empleado, Mesa, Plato, Orden, Factura
 from .forms import ClienteForm, EmpleadoForm, MesaForm, PlatoForm, OrdenForm, FacturaForm
+from .utils import role_required, RoleRequiredMixin
 
+@login_required
+@role_required(['Administrador'])
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -19,6 +22,7 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'gestion/register.html', {'form': form})
 
+@login_required
 def inicio(request):
     context = {
         'total_clientes': Cliente.objects.count(),
@@ -30,133 +34,163 @@ def inicio(request):
     }
     return render(request, 'gestion/inicio.html', context)
  
+@login_required
+@role_required(['Administrador', 'Mesero'])
 def lista_clientes(request):
     clientes = Cliente.objects.all()
     return render(request, 'gestion/clientes.html', {'clientes': clientes})
  
+@login_required
+@role_required(['Administrador'])
 def lista_empleados(request):
     empleados = Empleado.objects.all()
     return render(request, 'gestion/empleados.html', {'empleados': empleados})
  
+@login_required
+@role_required(['Administrador', 'Mesero'])
 def lista_mesas(request):
     mesas = Mesa.objects.all()
     return render(request, 'gestion/mesas.html', {'mesas': mesas})
  
+@login_required
+@role_required(['Administrador', 'Mesero'])
 def lista_platos(request):
     platos = Plato.objects.all()
     return render(request, 'gestion/platos.html', {'platos': platos})
  
+@login_required
+@role_required(['Administrador', 'Mesero', 'Cajero'])
 def lista_ordenes(request):
     ordenes = Orden.objects.all()
     return render(request, 'gestion/ordenes.html', {'ordenes': ordenes})
  
+@login_required
+@role_required(['Administrador', 'Cajero'])
 def lista_facturas(request):
     facturas = Factura.objects.all()
     return render(request, 'gestion/facturas.html', {'facturas': facturas})
 # --- CLIENTE CRUD ---
-class ClienteCreateView(LoginRequiredMixin, CreateView):
+class ClienteCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['Administrador']
     model = Cliente
     form_class = ClienteForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_clientes')
 
-class ClienteUpdateView(LoginRequiredMixin, UpdateView):
+class ClienteUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['Administrador']
     model = Cliente
     form_class = ClienteForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_clientes')
 
-class ClienteDeleteView(LoginRequiredMixin, DeleteView):
+class ClienteDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['Administrador']
     model = Cliente
     template_name = 'gestion/confirmar_eliminar.html'
     success_url = reverse_lazy('lista_clientes')
 
 # --- EMPLEADO CRUD ---
-class EmpleadoCreateView(LoginRequiredMixin, CreateView):
+class EmpleadoCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['Administrador']
     model = Empleado
     form_class = EmpleadoForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_empleados')
 
-class EmpleadoUpdateView(LoginRequiredMixin, UpdateView):
+class EmpleadoUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['Administrador']
     model = Empleado
     form_class = EmpleadoForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_empleados')
 
-class EmpleadoDeleteView(LoginRequiredMixin, DeleteView):
+class EmpleadoDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['Administrador']
     model = Empleado
     template_name = 'gestion/confirmar_eliminar.html'
     success_url = reverse_lazy('lista_empleados')
 
 # --- MESA CRUD ---
-class MesaCreateView(LoginRequiredMixin, CreateView):
+class MesaCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['Administrador']
     model = Mesa
     form_class = MesaForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_mesas')
 
-class MesaUpdateView(LoginRequiredMixin, UpdateView):
+class MesaUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['Administrador']
     model = Mesa
     form_class = MesaForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_mesas')
 
-class MesaDeleteView(LoginRequiredMixin, DeleteView):
+class MesaDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['Administrador']
     model = Mesa
     template_name = 'gestion/confirmar_eliminar.html'
     success_url = reverse_lazy('lista_mesas')
 
 # --- PLATO CRUD ---
-class PlatoCreateView(LoginRequiredMixin, CreateView):
+class PlatoCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['Administrador']
     model = Plato
     form_class = PlatoForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_platos')
 
-class PlatoUpdateView(LoginRequiredMixin, UpdateView):
+class PlatoUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['Administrador']
     model = Plato
     form_class = PlatoForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_platos')
 
-class PlatoDeleteView(LoginRequiredMixin, DeleteView):
+class PlatoDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['Administrador']
     model = Plato
     template_name = 'gestion/confirmar_eliminar.html'
     success_url = reverse_lazy('lista_platos')
 
 # --- ORDEN CRUD ---
-class OrdenCreateView(LoginRequiredMixin, CreateView):
+class OrdenCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['Administrador', 'Mesero']
     model = Orden
     form_class = OrdenForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_ordenes')
 
-class OrdenUpdateView(LoginRequiredMixin, UpdateView):
+class OrdenUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['Administrador', 'Mesero']
     model = Orden
     form_class = OrdenForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_ordenes')
 
-class OrdenDeleteView(LoginRequiredMixin, DeleteView):
+class OrdenDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['Administrador']
     model = Orden
     template_name = 'gestion/confirmar_eliminar.html'
     success_url = reverse_lazy('lista_ordenes')
 
 # --- FACTURA CRUD ---
-class FacturaCreateView(LoginRequiredMixin, CreateView):
+class FacturaCreateView(RoleRequiredMixin, CreateView):
+    allowed_roles = ['Administrador', 'Cajero']
     model = Factura
     form_class = FacturaForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_facturas')
 
-class FacturaUpdateView(LoginRequiredMixin, UpdateView):
+class FacturaUpdateView(RoleRequiredMixin, UpdateView):
+    allowed_roles = ['Administrador', 'Cajero']
     model = Factura
     form_class = FacturaForm
     template_name = 'gestion/form_generico.html'
     success_url = reverse_lazy('lista_facturas')
 
-class FacturaDeleteView(LoginRequiredMixin, DeleteView):
+class FacturaDeleteView(RoleRequiredMixin, DeleteView):
+    allowed_roles = ['Administrador']
     model = Factura
     template_name = 'gestion/confirmar_eliminar.html'
     success_url = reverse_lazy('lista_facturas')

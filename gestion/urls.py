@@ -35,4 +35,16 @@ urlpatterns = [
     path('facturas/crear/', views.FacturaCreateView.as_view(), name='factura_crear'),
     path('facturas/editar/<int:pk>/', views.FacturaUpdateView.as_view(), name='factura_editar'),
     path('facturas/eliminar/<int:pk>/', views.FacturaDeleteView.as_view(), name='factura_eliminar'),
+
+    path('reporte/', views.reporte_general, name='reporte_general'),
+
+    path('roles/', views.lista_roles, name='lista_roles'),
+    path('roles/crear/', views.RolCreateView.as_view(), name='rol_crear'),
+    path('roles/editar/<int:pk>/', views.RolUpdateView.as_view(), name='rol_editar'),
+    path('roles/eliminar/<int:pk>/', views.RolDeleteView.as_view(), name='rol_eliminar'),
+
+    path('permisos/', views.lista_permisos, name='lista_permisos'),
+    path('permisos/crear/', views.PermisoCreateView.as_view(), name='permiso_crear'),
+    path('permisos/editar/<int:pk>/', views.PermisoUpdateView.as_view(), name='permiso_editar'),
+    path('permisos/eliminar/<int:pk>/', views.PermisoDeleteView.as_view(), name='permiso_eliminar'),
 ]

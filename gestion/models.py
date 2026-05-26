@@ -1,5 +1,27 @@
 from decimal import Decimal
 from django.db import models
+from django.contrib.auth.models import User
+
+class Permiso(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    descripcion = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'Permiso'
+
+    def __str__(self):
+        return self.nombre
+
+class Rol(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    descripcion = models.TextField(blank=True, null=True)
+    permisos = models.ManyToManyField(Permiso, related_name='roles', blank=True)
+
+    class Meta:
+        db_table = 'Rol'
+
+    def __str__(self):
+        return self.nombre
 
 class Cliente(models.Model):
     nombre = models.CharField(max_length=100)
@@ -13,16 +35,9 @@ class Cliente(models.Model):
         return self.nombre
 
 class Empleado(models.Model):
-    CARGOS = [
-        ('Mesero', 'Mesero'),
-        ('Mesera', 'Mesera'),
-        ('Cajero', 'Cajero'),
-        ('Cajera', 'Cajera'),
-        ('Administrador', 'Administrador'),
-    ]
-
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='empleado', null=True, blank=True)
     nombre = models.CharField(max_length=100)
-    cargo = models.CharField(max_length=50, choices=CARGOS)
+    rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True, blank=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     correo = models.EmailField(unique=True, blank=True, null=True)
 
@@ -30,7 +45,7 @@ class Empleado(models.Model):
         db_table = 'Empleado'
 
     def __str__(self):
-        return f"{self.nombre} - {self.cargo}"
+        return f"{self.nombre} - {self.rol.nombre if self.rol else 'Sin Rol'}"
 
 class Mesa(models.Model):
     ESTADOS_MESA = [

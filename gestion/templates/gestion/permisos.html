@@ -1,0 +1,27 @@
+{% extends 'gestion/base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Permisos</h2>
+    <a href="{% url 'permiso_crear' %}" style="background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">Nuevo Permiso</a>
+</div>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+    </tr>
+    {% for permiso in permisos %}
+    <tr>
+        <td>{{ permiso.id }}</td>
+        <td>{{ permiso.nombre }}</td>
+        <td>{{ permiso.descripcion }}</td>
+        <td>
+            <a href="{% url 'permiso_editar' permiso.id %}" style="color: #007bff; text-decoration: none; margin-right: 10px;">Editar</a>
+            <a href="{% url 'permiso_eliminar' permiso.id %}" style="color: #dc3545; text-decoration: none;">Eliminar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

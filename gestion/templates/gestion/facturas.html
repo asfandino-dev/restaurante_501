@@ -3,7 +3,9 @@
 {% block content %}
 <div style="display: flex; justify-content: space-between; align-items: center;">
     <h2>Facturas</h2>
+    {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Cajero' or user.is_superuser %}
     <a href="{% url 'factura_crear' %}" style="background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">Nueva Factura</a>
+    {% endif %}
 </div>
 <table>
     <tr>
@@ -22,8 +24,12 @@
         <td>{{ factura.total_factura }}</td>
         <td>{{ factura.metodo_pago }}</td>
         <td>
+            {% if user.empleado.cargo == 'Administrador' or user.empleado.cargo == 'Cajero' or user.is_superuser %}
             <a href="{% url 'factura_editar' factura.id %}" style="color: #007bff; text-decoration: none; margin-right: 10px;">Editar</a>
+            {% endif %}
+            {% if user.empleado.cargo == 'Administrador' or user.is_superuser %}
             <a href="{% url 'factura_eliminar' factura.id %}" style="color: #dc3545; text-decoration: none;">Eliminar</a>
+            {% endif %}
         </td>
     </tr>
     {% endfor %}
